@@ -1,0 +1,12 @@
+import { Router } from 'express';
+import { getTemplates, getTemplateById, createTemplate, updateTemplate, deleteTemplate } from '../controllers/template.controller.js';
+import { protect } from '../middlewares/auth.js';
+import { templateUpload } from '../middlewares/multer.js';
+const router = Router();
+router.use(protect);
+router.get('/', getTemplates);
+router.get('/:id', getTemplateById);
+router.post('/', templateUpload.array('files', 5), createTemplate);
+router.patch('/:id', templateUpload.array('files', 5), updateTemplate);
+router.delete('/:id', deleteTemplate);
+export default router;

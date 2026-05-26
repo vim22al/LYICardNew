@@ -1,0 +1,16 @@
+import { Router } from 'express';
+import { CampaignController } from '../controllers/campaign.controller.js';
+import { protect } from '../middlewares/auth.js';
+const router = Router();
+const campaignController = new CampaignController();
+router.use(protect);
+router.post('/', campaignController.createCampaign);
+router.get('/', campaignController.getCampaigns);
+router.get('/:id', campaignController.getCampaignById);
+router.patch('/:id', campaignController.updateCampaign);
+router.delete('/:id', campaignController.deleteCampaign);
+router.post('/:id/contacts', campaignController.addContactsToCampaign);
+router.delete('/:id/contacts', campaignController.removeContactsFromCampaign);
+router.patch('/:id/template', campaignController.setCampaignTemplate);
+router.post('/:id/send', campaignController.sendCampaign);
+export default router;

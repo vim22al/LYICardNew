@@ -1,0 +1,10 @@
+export const errorHandler = (err, req, res, next) => {
+    console.error('🔥 App Error:', err);
+    const status = err.status || 500;
+    const message = err.message || 'Internal Server Error';
+    res.status(status).json({
+        id: req.body?.id,
+        status: 'failed',
+        error: message,
+    });
+};
