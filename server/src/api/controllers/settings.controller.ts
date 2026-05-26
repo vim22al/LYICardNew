@@ -3,8 +3,9 @@ import bcrypt from 'bcryptjs';
 import { User } from '../models/user.model.js';
 import { Config } from '../models/config.model.js';
 import { resetTransporter } from '../../utils/mailer.js';
+import { AuthRequest } from '../middlewares/auth.js';
 
-export const updateProfile = async (req: Request, res: Response, next: NextFunction) => {
+export const updateProfile = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { name, jobTitle } = req.body;
     const userId = req.user?.id;
@@ -31,7 +32,7 @@ export const updateProfile = async (req: Request, res: Response, next: NextFunct
   }
 };
 
-export const updatePassword = async (req: Request, res: Response, next: NextFunction) => {
+export const updatePassword = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { currentPassword, newPassword } = req.body;
     const userId = req.user?.id;

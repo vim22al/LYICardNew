@@ -17,7 +17,7 @@ const ConfigSchema: Schema = new Schema({
 });
 
 // Update the updatedAt timestamp on save
-ConfigSchema.pre('save', function(next) {
+ConfigSchema.pre('save', function(this: any, next: any) {
   this.updatedAt = new Date();
   next();
 });
