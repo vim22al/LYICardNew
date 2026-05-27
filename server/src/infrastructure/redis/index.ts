@@ -26,5 +26,6 @@ export const connectRedis = async (): Promise<void> => {
       console.error('❌ Redis connection error:', err);
       reject(err);
     });
+    console.log('REDIS_URL FROM ENV:', env.REDIS_URL);
   });
 };
