@@ -21,6 +21,17 @@ import adminUserRoutes from './api/routes/admin.user.routes.js';
 import adminPlanRoutes from './api/routes/admin.plan.routes.js';
 import settingsRoutes from './api/routes/settings.routes.js';
 
+// Then import your modules
+// import { env } from './config/env.js';
+console.log('Loaded REDIS_URL:', env.REDIS_URL ? 'YES ✅' : 'NO ❌');
+
+// At the very top of your file
+console.log('🚀 Server Starting...');
+console.log('REDIS_URL env:', process.env.REDIS_URL ? 'SET ✅' : 'NOT SET ❌');
+console.log('NODE_ENV:', process.env.NODE_ENV);
+
+
+
 const startServer = async () => {
   const app = express();
 
@@ -43,6 +54,8 @@ const startServer = async () => {
   app.use('/api/admin/plans', adminPlanRoutes);
   app.use('/api/settings', settingsRoutes);
 
+
+
   // Health check
   app.get('/api/health', (req, res) => {
     res.json({ status: 'ok' });
@@ -53,16 +66,16 @@ const startServer = async () => {
     await connectDB();
     await connectRedis();
     await connectRabbitMQ();
-    
+
     // Start RabbitMQ Background Consumer for extraction results
     await startExtractionResultConsumer();
-    
+
     // Start BullMQ Worker for campaigns and single emails
     const { startCampaignWorker } = await import('./workers/campaign.worker.js');
     const { startEmailWorker } = await import('./workers/email.worker.js');
     startCampaignWorker();
     startEmailWorker();
-    
+
     // Setup Bull Board
     setupBullBoard(app);
 
