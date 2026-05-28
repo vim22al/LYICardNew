@@ -6,7 +6,8 @@ import { sendEmail } from '../utils/mailer.js';
 
 const connection = new Redis(env.REDIS_URL, {
   maxRetriesPerRequest: null,
-  tls: env.REDIS_URL.startsWith('rediss://') ? { rejectUnauthorized: false } : undefined
+  enableReadyCheck: true,
+  tls: { rejectUnauthorized: false }
 });
 
 export const startCampaignWorker = () => {

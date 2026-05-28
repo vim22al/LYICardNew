@@ -4,7 +4,8 @@ import { env } from '../config/env.js';
 
 const connection = new Redis(env.REDIS_URL, {
   maxRetriesPerRequest: null,
-  tls: env.REDIS_URL.startsWith('rediss://') ? { rejectUnauthorized: false } : undefined
+  enableReadyCheck: true,
+  tls: { rejectUnauthorized: false }
 });
 
 export const extractJobQueue = new Queue('extract-jobs', {

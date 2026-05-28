@@ -9,7 +9,8 @@ import { Express } from 'express';
 // Create a dedicated Redis connection for BullMQ queues to ensure correct configuration at load time
 const connection = new Redis(env.REDIS_URL, {
   maxRetriesPerRequest: null,
-  tls: env.REDIS_URL.startsWith('rediss://') ? { rejectUnauthorized: false } : undefined
+  enableReadyCheck: true,
+  tls: { rejectUnauthorized: false }
 });
 
 // Queues to initialize

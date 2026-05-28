@@ -7,7 +7,8 @@ import { env } from '../config/env.js';
 export function startExtractWorker() {
   const connection = new Redis(env.REDIS_URL, {
     maxRetriesPerRequest: null,
-    tls: env.REDIS_URL.startsWith('rediss://') ? { rejectUnauthorized: false } : undefined
+    enableReadyCheck: true,
+    tls: { rejectUnauthorized: false }
   });
 
   const worker = new Worker(

@@ -8,6 +8,7 @@ export const connectRedis = async (): Promise<void> => {
     redis = new Redis(env.REDIS_URL, {
       maxRetriesPerRequest: null,
       enableReadyCheck: true,
+      tls: { rejectUnauthorized: false }
     });
 
     redis.on('connect', () => {
