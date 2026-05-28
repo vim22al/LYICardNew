@@ -1,9 +1,13 @@
 import { Worker } from 'bullmq';
-import { redis } from '../infrastructure/redis/index.js';
+import { Redis } from 'ioredis';
 import { extract } from '../services/extract.service.js';
 import { ExtractionResult } from '../api/models/extraction-result.model.js';
 import { env } from '../config/env.js';
 export function startExtractWorker() {
+    const connection = new Redis(env.REDIS_URL, {
+        maxRetriesPerRequest: null,
+        tls: env.REDIS_URL.startsWith('rediss://') ? { rejectUnauthorized: false } : undefined
+    });
     const worker = new Worker('extract-jobs', async (job) => {
         const { documentId, jobId } = job.data;
         await ExtractionResult.findOneAndUpdate({ jobId }, { status: 'processing' });
@@ -16,7 +20,7 @@ export function startExtractWorker() {
         }, { upsert: true });
         return result;
     }, {
-        connection: redis,
+        connection,
         concurrency: env.EXTRACT_WORKER_CONCURRENCY,
     });
     worker.on('completed', (job) => {

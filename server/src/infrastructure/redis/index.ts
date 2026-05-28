@@ -39,8 +39,8 @@ export const connectRedis = async (): Promise<void> => {
   return new Promise((resolve, reject) => {
     console.log('📋 Environment Variables Check:');
     console.log('REDIS_URL:', env.REDIS_URL);
-    console.log('REDIS_HOST:', env.REDIS_HOST);
-    console.log('REDIS_PORT:', env.REDIS_PORT);
+    console.log('REDIS_HOST:', process.env.REDIS_HOST);
+    console.log('REDIS_PORT:', process.env.REDIS_PORT);
 
     if (!env.REDIS_URL) {
       console.error('❌ REDIS_URL is NOT defined!');

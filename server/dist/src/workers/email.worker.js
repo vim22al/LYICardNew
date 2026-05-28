@@ -1,8 +1,13 @@
 import { Worker } from 'bullmq';
-import { redis } from '../infrastructure/redis/index.js';
+import { Redis } from 'ioredis';
+import { env } from '../config/env.js';
 import { Template } from '../api/models/template.model.js';
 import { Contact } from '../api/models/contact.model.js';
 import { sendEmail } from '../utils/mailer.js';
+const connection = new Redis(env.REDIS_URL, {
+    maxRetriesPerRequest: null,
+    tls: env.REDIS_URL.startsWith('rediss://') ? { rejectUnauthorized: false } : undefined
+});
 export const startEmailWorker = () => {
     const worker = new Worker('single-email', async (job) => {
         const { contactId, templateId, to, subject, html, attachments } = job.data;
@@ -56,7 +61,7 @@ export const startEmailWorker = () => {
             throw error;
         }
     }, {
-        connection: redis,
+        connection,
         concurrency: 5 // Higher concurrency for single emails
     });
     worker.on('completed', (job) => {

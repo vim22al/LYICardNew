@@ -4,7 +4,8 @@ import { publishExtractionResult } from './rabbitmq.producer.js';
 
 export async function startImageExtractionConsumer(): Promise<void> {
   if (!rabbitChannel) {
-    throw new Error('RabbitMQ channel not initialized');
+    console.warn('⚠️ RabbitMQ channel not initialized. Extraction consumer not started.');
+    return;
   }
 
   const queue = 'extract-image-queue';

@@ -2,14 +2,20 @@ import { Queue } from 'bullmq';
 import { createBullBoard } from '@bull-board/api';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
 import { ExpressAdapter } from '@bull-board/express';
-import { redis } from '../redis/index.js';
+import { Redis } from 'ioredis';
 import { env } from '../../config/env.js';
 import { Express } from 'express';
 import { extractJobQueue } from '../../queues/bullmq.queue.js';
 
+// Create a dedicated Redis connection for BullMQ default queue to ensure correct configuration at load time
+const connection = new Redis(env.REDIS_URL, {
+  maxRetriesPerRequest: null,
+  tls: env.REDIS_URL.startsWith('rediss://') ? { rejectUnauthorized: false } : undefined
+});
+
 // Example queue to initialize Bull Board
 export const defaultQueue = new Queue('default', {
-  connection: redis
+  connection
 });
 
 export const setupBullBoard = (app: Express) => {

@@ -3,7 +3,8 @@ import { ExtractOutput } from '../utils/idempotency.js';
 
 export async function publishExtractionResult(result: ExtractOutput): Promise<void> {
   if (!rabbitChannel) {
-    throw new Error('RabbitMQ channel not initialized');
+    console.warn('⚠️ RabbitMQ channel not initialized. Cannot publish extraction result.');
+    return;
   }
 
   const queue = 'extracted-image-data';

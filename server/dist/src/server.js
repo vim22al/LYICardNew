@@ -19,6 +19,13 @@ import adminAnalyticsRoutes from './api/routes/admin.analytics.routes.js';
 import adminUserRoutes from './api/routes/admin.user.routes.js';
 import adminPlanRoutes from './api/routes/admin.plan.routes.js';
 import settingsRoutes from './api/routes/settings.routes.js';
+// Then import your modules
+// import { env } from './config/env.js';
+console.log('Loaded REDIS_URL:', env.REDIS_URL ? 'YES ✅' : 'NO ❌');
+// At the very top of your file
+console.log('🚀 Server Starting...');
+console.log('REDIS_URL env:', process.env.REDIS_URL ? 'SET ✅' : 'NOT SET ❌');
+console.log('NODE_ENV:', process.env.NODE_ENV);
 const startServer = async () => {
     const app = express();
     // Middlewares
@@ -46,9 +53,21 @@ const startServer = async () => {
         // Sequential connections
         await connectDB();
         await connectRedis();
-        await connectRabbitMQ();
-        // Start RabbitMQ Background Consumer for extraction results
-        await startExtractionResultConsumer();
+        // Connection diagnostics
+        console.log('📋 Service Connection Status:');
+        console.log('  ✅ MongoDB:', env.MONGO_URI ? 'configured' : '❌ missing');
+        console.log('  ✅ Redis:', env.REDIS_URL ? 'connected' : '❌ missing');
+        console.log('  🔄 RabbitMQ:', env.RABBITMQ_HOST || '❌ missing');
+        try {
+            await connectRabbitMQ();
+            console.log('✅ RabbitMQ connected');
+            // Start RabbitMQ Background Consumer for extraction results
+            await startExtractionResultConsumer();
+        }
+        catch (err) {
+            console.warn('⚠️  RabbitMQ unavailable:', err.message);
+            console.warn('ℹ️  Server will continue without message queue');
+        }
         // Start BullMQ Worker for campaigns and single emails
         const { startCampaignWorker } = await import('./workers/campaign.worker.js');
         const { startEmailWorker } = await import('./workers/email.worker.js');

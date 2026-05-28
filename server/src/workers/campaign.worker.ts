@@ -1,7 +1,13 @@
 import { Worker, Job } from 'bullmq';
-import { redis } from '../infrastructure/redis/index.js';
+import { Redis } from 'ioredis';
+import { env } from '../config/env.js';
 import { Campaign } from '../api/models/campaign.model.js';
 import { sendEmail } from '../utils/mailer.js';
+
+const connection = new Redis(env.REDIS_URL, {
+  maxRetriesPerRequest: null,
+  tls: env.REDIS_URL.startsWith('rediss://') ? { rejectUnauthorized: false } : undefined
+});
 
 export const startCampaignWorker = () => {
   const worker = new Worker(
@@ -72,7 +78,7 @@ export const startCampaignWorker = () => {
       }
     },
     { 
-      connection: redis,
+      connection,
       concurrency: 1 // Process one campaign at a time to stay safe with mail servers
     }
   );

@@ -1,7 +1,8 @@
 import { rabbitChannel } from '../infrastructure/queue/rabbitmq.js';
 export async function publishExtractionResult(result) {
     if (!rabbitChannel) {
-        throw new Error('RabbitMQ channel not initialized');
+        console.warn('⚠️ RabbitMQ channel not initialized. Cannot publish extraction result.');
+        return;
     }
     const queue = 'extracted-image-data';
     await rabbitChannel.assertQueue(queue, { durable: true });

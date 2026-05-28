@@ -35,13 +35,26 @@ const startServer = async () => {
     // Sequential connections to ensure deterministic logging order
     await connectDB();
     await connectRedis();
-    await connectRabbitMQ();
+
+    // Connection diagnostics
+    console.log('📋 Service Connection Status:');
+    console.log('  ✅ MongoDB:', env.MONGO_URI ? 'configured' : '❌ missing');
+    console.log('  ✅ Redis:', env.REDIS_URL ? 'connected' : '❌ missing');
+    console.log('  🔄 RabbitMQ:', env.RABBITMQ_HOST || '❌ missing');
     
+    try {
+      await connectRabbitMQ();
+      console.log('✅ RabbitMQ connected');
+      // Initialization
+      await startImageExtractionConsumer();
+    } catch (err: any) {
+      console.warn('⚠️  RabbitMQ unavailable:', err.message);
+      console.warn('ℹ️  Server will continue without message queue');
+    }
+
     // Setup Bull Board (needs Redis connection)
     setupBullBoard(app);
 
-    // Initialization
-    await startImageExtractionConsumer();
     startExtractWorker();
 
     // Error handler (must be last)

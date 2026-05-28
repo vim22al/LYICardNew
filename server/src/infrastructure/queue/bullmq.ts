@@ -2,17 +2,23 @@ import { Queue } from 'bullmq';
 import { createBullBoard } from '@bull-board/api';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
 import { ExpressAdapter } from '@bull-board/express';
-import { redis } from '../redis/index.js';
+import { Redis } from 'ioredis';
 import { env } from '../../config/env.js';
 import { Express } from 'express';
 
+// Create a dedicated Redis connection for BullMQ queues to ensure correct configuration at load time
+const connection = new Redis(env.REDIS_URL, {
+  maxRetriesPerRequest: null,
+  tls: env.REDIS_URL.startsWith('rediss://') ? { rejectUnauthorized: false } : undefined
+});
+
 // Queues to initialize
 export const defaultQueue = new Queue('default', {
-  connection: redis
+  connection
 });
 
 export const campaignQueue = new Queue('campaign', {
-  connection: redis,
+  connection,
   defaultJobOptions: {
     attempts: 3,
     backoff: {
@@ -24,7 +30,7 @@ export const campaignQueue = new Queue('campaign', {
 });
 
 export const singleEmailQueue = new Queue('single-email', {
-  connection: redis,
+  connection,
   defaultJobOptions: {
     attempts: 5,
     backoff: {

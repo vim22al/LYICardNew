@@ -65,10 +65,22 @@ const startServer = async () => {
     // Sequential connections
     await connectDB();
     await connectRedis();
-    await connectRabbitMQ();
 
-    // Start RabbitMQ Background Consumer for extraction results
-    await startExtractionResultConsumer();
+    // Connection diagnostics
+    console.log('📋 Service Connection Status:');
+    console.log('  ✅ MongoDB:', env.MONGO_URI ? 'configured' : '❌ missing');
+    console.log('  ✅ Redis:', env.REDIS_URL ? 'connected' : '❌ missing');
+    console.log('  🔄 RabbitMQ:', env.RABBITMQ_HOST || '❌ missing');
+
+    try {
+      await connectRabbitMQ();
+      console.log('✅ RabbitMQ connected');
+      // Start RabbitMQ Background Consumer for extraction results
+      await startExtractionResultConsumer();
+    } catch (err: any) {
+      console.warn('⚠️  RabbitMQ unavailable:', err.message);
+      console.warn('ℹ️  Server will continue without message queue');
+    }
 
     // Start BullMQ Worker for campaigns and single emails
     const { startCampaignWorker } = await import('./workers/campaign.worker.js');
