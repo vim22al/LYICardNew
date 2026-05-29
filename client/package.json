@@ -2,10 +2,6 @@
   "name": "client",
   "private": true,
   "type": "module",
-  "engines": {
-    "node": ">=22.12.0",
-    "npm": ">=10.0.0"
-  },
   "imports": {
     "#/*": "./src/*"
   },
@@ -13,7 +9,6 @@
     "dev": "vite dev --port 3000",
     "build": "vite build",
     "preview": "vite preview",
-    "start": "vite preview --host 0.0.0.0 --port 3000",
     "test": "vitest run",
     "lint": "eslint",
     "format": "prettier --check .",
