@@ -1,6 +1,29 @@
 // export const BASE_URL = 'http://localhost:8000/api'
 
-export const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
+const getSanitizedBaseUrl = (): string => {
+  let rawUrl = import.meta.env.VITE_API_URL || '/api'
+  if (rawUrl.startsWith('http')) {
+    if (!rawUrl.endsWith('/api') && !rawUrl.endsWith('/api/')) {
+      if (rawUrl.endsWith('/')) {
+        rawUrl += 'api'
+      } else {
+        rawUrl += '/api'
+      }
+    }
+  } else {
+    // For relative paths, force it to be /api
+    if (rawUrl !== '/api') {
+      rawUrl = '/api'
+    }
+  }
+  // Ensure no trailing slash for clean endpoint concatenation
+  if (rawUrl.endsWith('/')) {
+    rawUrl = rawUrl.slice(0, -1)
+  }
+  return rawUrl
+}
+
+export const BASE_URL = getSanitizedBaseUrl()
 
 export async function fetcher<T>(
   endpoint: string,
