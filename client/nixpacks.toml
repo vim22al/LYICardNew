@@ -5,4 +5,8 @@ nixpkgsArchive = '64c08a7ca051951c8eae34e3e3cb1e202fe36786'
 nodeVersion = "22.13.0"
 
 [start]
-cmd = "node dist/server/server.js"
+cmd = "node server.mjs"
+
+[variables]
+PORT = "3000"
+HOST = "0.0.0.0"
