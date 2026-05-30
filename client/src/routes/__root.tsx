@@ -1,5 +1,6 @@
 import * as React from 'react'
 import {
+  HeadContent,
   Scripts,
   createRootRoute,
   ErrorComponent,
@@ -118,6 +119,9 @@ function AuthBootstrap({ children }: { children: React.ReactNode }) {
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <HeadContent />
+      </head>
       <body
         suppressHydrationWarning
         className="min-h-screen bg-background text-foreground transition-colors duration-300"
