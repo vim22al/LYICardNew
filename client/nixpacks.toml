@@ -1,2 +1,8 @@
+[phases.setup]
+nixpkgsArchive = '64c08a7ca051951c8eae34e3e3cb1e202fe36786'
+
 [build]
 nodeVersion = "22.13.0"
+
+[start]
+cmd = "node .output/server/index.mjs"

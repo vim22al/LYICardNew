@@ -5,7 +5,6 @@ import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 
 import viteReact from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
-import netlify from '@netlify/vite-plugin-tanstack-start'
 
 export default defineConfig(({ command }) => {
   return {
@@ -17,7 +16,6 @@ export default defineConfig(({ command }) => {
     },
     plugins: [
       devtools(),
-      command === 'build' && netlify(),
       tailwindcss(),
       tanstackStart(),
       viteReact(),
