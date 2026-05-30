@@ -17,7 +17,11 @@ export default defineConfig(({ command }) => {
     plugins: [
       devtools(),
       tailwindcss(),
-      tanstackStart(),
+      tanstackStart({
+        nitro: {
+          preset: 'node-server',
+        },
+      }),
       viteReact(),
     ].filter(Boolean),
   }
