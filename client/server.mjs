@@ -13,7 +13,8 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 // Proxy API requests to backend
-app.use('/api', createProxyMiddleware({
+app.use(createProxyMiddleware({
+  pathFilter: '/api',
   target: 'http://tun11p4kzvckrqoxake01e35.31.97.235.52.sslip.io',
   changeOrigin: true,
 }));
