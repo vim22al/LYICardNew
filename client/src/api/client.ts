@@ -44,7 +44,10 @@ export async function fetcher<T>(
     console.error('Error parsing auth data from localStorage', e)
   }
 
-  const response = await fetch(`${BASE_URL}${endpoint}`, {
+  const url = `${BASE_URL}${endpoint}`
+  console.log("API URL:", url)
+
+  const response = await fetch(url, {
     headers: {
       ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
