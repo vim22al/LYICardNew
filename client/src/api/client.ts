@@ -9,8 +9,8 @@ const getSanitizedBaseUrl = (): string => {
   const isProd = isProdHost || import.meta.env.PROD || (typeof process !== 'undefined' && process.env?.NODE_ENV === 'production')
 
   if (isProdHost) {
-    // Force production backend API when running on the production domain
-    rawUrl = 'http://tun11p4kzvckrqoxake01e35.31.97.235.52.sslip.io/api'
+    // Relative URL to use frontend's reverse proxy, preventing mixed content blocks in the browser
+    rawUrl = '/api'
   } else if (!rawUrl || !rawUrl.startsWith('http')) {
     // If VITE_API_URL is missing, relative, or not absolute, default to absolute URL based on environment
     rawUrl = isProd
@@ -18,7 +18,8 @@ const getSanitizedBaseUrl = (): string => {
       : 'http://localhost:8000/api'
   }
 
-  if (!rawUrl.endsWith('/api') && !rawUrl.endsWith('/api/')) {
+  // Only append /api to absolute HTTP URLs
+  if (rawUrl.startsWith('http') && !rawUrl.endsWith('/api') && !rawUrl.endsWith('/api/')) {
     if (rawUrl.endsWith('/')) {
       rawUrl += 'api'
     } else {
@@ -27,7 +28,7 @@ const getSanitizedBaseUrl = (): string => {
   }
 
   // Ensure no trailing slash for clean endpoint concatenation
-  if (rawUrl.endsWith('/')) {
+  if (rawUrl.startsWith('http') && rawUrl.endsWith('/')) {
     rawUrl = rawUrl.slice(0, -1)
   }
   return rawUrl
