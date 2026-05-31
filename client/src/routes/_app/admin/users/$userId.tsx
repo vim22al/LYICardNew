@@ -42,7 +42,7 @@ const userFormSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Invalid email address'),
   subscriptionStatus: z.enum(['active', 'inactive']),
-  subscriptionType: z.enum(['free', 'pro']),
+  subscriptionType: z.enum(['free', 'pro', 'max']),
   userType: z.enum(['admin', 'user']),
   plan: z.string().optional(),
 })
@@ -261,7 +261,7 @@ function AdminUserDetailPage() {
                   </Label>
                   <Select
                     onValueChange={(val) =>
-                      form.setValue('subscriptionType', val as 'free' | 'pro')
+                      form.setValue('subscriptionType', val as 'free' | 'pro' | 'max')
                     }
                     value={form.watch('subscriptionType')}
                   >
@@ -271,6 +271,7 @@ function AdminUserDetailPage() {
                     <SelectContent>
                       <SelectItem value="free">Free Plan</SelectItem>
                       <SelectItem value="pro">Pro Plan</SelectItem>
+                      <SelectItem value="max">Max Plan</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

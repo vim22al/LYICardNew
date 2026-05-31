@@ -21,8 +21,8 @@ const seedTransactions = async () => {
     await Transaction.deleteMany({});
 
     const plans = [
-      { name: 'pro_monthly', amount: 29, interval: 'month' },
-      { name: 'pro_yearly', amount: 290, interval: 'year' }
+      { name: 'pro_monthly', amount: 1200, interval: 'month' },
+      { name: 'max_monthly', amount: 2400, interval: 'month' }
     ];
 
     const transactions = [];
@@ -59,8 +59,9 @@ const seedTransactions = async () => {
       // Update user subscription status based on latest transaction
       if (Math.random() > 0.3) {
         user.subscriptionStatus = 'active';
-        user.subscriptionType = 'pro';
-        user.plan = 'pro_monthly';
+        const isMax = Math.random() > 0.5;
+        user.subscriptionType = isMax ? 'max' : 'pro';
+        user.plan = isMax ? 'max_monthly' : 'pro_monthly';
         await user.save();
       }
     }

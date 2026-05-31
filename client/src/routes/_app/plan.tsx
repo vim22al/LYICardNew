@@ -1,12 +1,16 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Check, Sparkles } from 'lucide-react'
+import { Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { useAuthStore } from '@/stores/useAuthStore'
 
 export const Route = createFileRoute('/_app/plan')({
   component: PlanPage,
 })
 
 function PlanPage() {
+  const { user } = useAuthStore()
+  const userPlan = user?.subscriptionType || 'free'
+
   return (
     <div className="space-y-8">
       <div className="text-center max-w-2xl mx-auto space-y-4">
@@ -21,31 +25,43 @@ function PlanPage() {
       <div className="grid gap-8 md:grid-cols-3">
         {[
           {
-            name: 'Free',
+            id: 'free',
+            name: 'FREE',
             price: '0',
-            features: ['10 Scans / month', 'Basic CRM', 'Email Support'],
-            current: true,
+            features: [
+              '10 card scans per month',
+              'Basic contact storage',
+              'Export to CSV',
+              'Email support',
+            ],
+            current: userPlan === 'free',
           },
           {
-            name: 'Pro',
-            price: '29',
+            id: 'pro',
+            name: 'PRO',
+            price: '1200',
             features: [
-              'Unlimited Scans',
-              'WhatsApp Integration',
-              'Bulk Campaigns',
-              'AI Enrichment',
+              'Unlimited card scans',
+              'Contact access & sharing',
+              'Export to CSV',
+              'Email templates',
+              'Priority email support',
             ],
             popular: true,
+            current: userPlan === 'pro',
           },
           {
-            name: 'Enterprise',
-            price: '99',
+            id: 'max',
+            name: 'MAX',
+            price: '2400',
             features: [
-              'Custom Branding',
-              'API Access',
-              'Dedicated Manager',
-              'Team Workspaces',
+              'Unlimited card scans',
+              'Team access & sharing',
+              'Export to CSV',
+              'WhatsApp & Email templates',
+              'Call & email support',
             ],
+            current: userPlan === 'max',
           },
         ].map((plan, i) => (
           <div
@@ -67,7 +83,7 @@ function PlanPage() {
               </h3>
               <div className="mt-4 flex items-baseline gap-1">
                 <span className="text-4xl font-black text-foreground font-sans">
-                  ${plan.price}
+                  ₹{plan.price}
                 </span>
                 <span className="text-muted-foreground font-sans">/month</span>
               </div>
@@ -93,6 +109,7 @@ function PlanPage() {
                   ? 'bg-accent text-muted-foreground cursor-not-allowed'
                   : 'bg-[#4fb8b2] hover:bg-lagoon-deep text-white shadow-lg shadow-[#4fb8b2]/20'
               }`}
+              disabled={plan.current}
             >
               {plan.current ? 'Current Plan' : 'Select Plan'}
             </Button>

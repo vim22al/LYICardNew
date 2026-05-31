@@ -86,16 +86,16 @@ function AdminAnalyticsRevenuePage() {
   const kpiCards = [
     {
       label: 'Monthly Recurring (MRR)',
-      value: `$${metrics.mrr.toLocaleString()}`,
+      value: `₹${metrics.mrr.toLocaleString()}`,
       icon: DollarSign,
       color: 'text-emerald-500',
       bg: 'bg-emerald-500/10',
-      trend: `$${metrics.arr.toLocaleString()} ARR`,
+      trend: `₹${metrics.arr.toLocaleString()} ARR`,
       isPositive: true,
     },
     {
       label: 'Total Revenue',
-      value: `$${metrics.totalRevenue.toLocaleString()}`,
+      value: `₹${metrics.totalRevenue.toLocaleString()}`,
       icon: Banknote,
       color: 'text-blue-500',
       bg: 'bg-blue-500/10',
@@ -104,7 +104,7 @@ function AdminAnalyticsRevenuePage() {
     },
     {
       label: 'Avg Revenue / User',
-      value: `$${metrics.arpu}`,
+      value: `₹${metrics.arpu}`,
       icon: Users,
       color: 'text-purple-500',
       bg: 'bg-purple-500/10',
@@ -117,7 +117,7 @@ function AdminAnalyticsRevenuePage() {
       icon: TrendingUp,
       color: 'text-orange-500',
       bg: 'bg-orange-500/10',
-      trend: 'Free to Pro',
+      trend: 'Free to Paid',
       isPositive: true,
     },
   ]
@@ -228,7 +228,7 @@ function AdminAnalyticsRevenuePage() {
                       fontSize: 10,
                       fill: 'hsl(var(--muted-foreground))',
                     }}
-                    tickFormatter={(value) => `$${value}`}
+                    tickFormatter={(value) => `₹${value}`}
                   />
                   <Tooltip
                     contentStyle={{
@@ -236,7 +236,7 @@ function AdminAnalyticsRevenuePage() {
                       borderColor: 'hsl(var(--border))',
                       borderRadius: '12px',
                     }}
-                    formatter={(value: any) => [`$${value}`, 'Revenue']}
+                    formatter={(value: any) => [`₹${value}`, 'Revenue']}
                   />
                   <Area
                     type="monotone"
@@ -287,7 +287,7 @@ function AdminAnalyticsRevenuePage() {
                       borderColor: 'hsl(var(--border))',
                       borderRadius: '12px',
                     }}
-                    formatter={(value: any) => [`$${value}`, 'Revenue']}
+                    formatter={(value: any) => [`₹${value}`, 'Revenue']}
                   />
                 </PieChart>
               </ResponsiveContainer>
@@ -306,7 +306,7 @@ function AdminAnalyticsRevenuePage() {
                     <span className="text-sm font-medium">{item._id}</span>
                   </div>
                   <span className="text-sm font-bold">
-                    ${item.revenue.toLocaleString()}
+                    ₹{item.revenue.toLocaleString()}
                   </span>
                 </div>
               ))}
@@ -329,7 +329,7 @@ function AdminAnalyticsRevenuePage() {
           <div className="grid gap-6 md:grid-cols-3">
             <div className="p-4 rounded-2xl bg-muted/30 border border-border/50">
               <p className="text-sm font-medium text-muted-foreground mb-1">
-                Active Pro Subscriptions
+                Active Paid Subscriptions
               </p>
               <p className="text-2xl font-black">
                 {metrics.activeSubscriptions}
@@ -346,7 +346,7 @@ function AdminAnalyticsRevenuePage() {
                 Estimated MRR
               </p>
               <p className="text-2xl font-black">
-                ${metrics.mrr.toLocaleString()}
+                ₹{metrics.mrr.toLocaleString()}
               </p>
               <p className="text-[10px] text-emerald-500 mt-1 flex items-center gap-1">
                 <ArrowUpRight className="h-3 w-3" />
@@ -358,7 +358,7 @@ function AdminAnalyticsRevenuePage() {
                 Customer Lifetime Value (Est)
               </p>
               <p className="text-2xl font-black">
-                ${(metrics.arpu * 12).toFixed(2)}
+                ₹{(metrics.arpu * 12).toFixed(2)}
               </p>
               <p className="text-[10px] text-muted-foreground mt-1">
                 Based on current ARPU

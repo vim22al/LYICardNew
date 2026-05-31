@@ -9,7 +9,7 @@ export interface IUser extends Document {
   authType: 'email' | 'google';
   userType: 'admin' | 'user';
   subscriptionStatus: 'active' | 'inactive';
-  subscriptionType: 'free' | 'pro';
+  subscriptionType: 'free' | 'pro' | 'max';
   subscriptionStartDate: Date;
   subscriptionEndDate: Date;
   plan?: string;
@@ -42,7 +42,7 @@ const UserSchema: Schema = new Schema({
   },
   subscriptionType: {
     type: String,
-    enum: ['free', 'pro'],
+    enum: ['free', 'pro', 'max'],
     default: 'free'
   },
   subscriptionStartDate: { type: Date },

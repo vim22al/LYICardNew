@@ -69,7 +69,7 @@ export class AdminAnalyticsController {
     getRevenueAnalytics = async (req, res) => {
         try {
             const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-            const [revenueStats, revenueByPlan, revenueTrend, activeSubscriptions] = await Promise.all([
+            const [revenueStats, revenueByPlan, revenueTrend, activeProSubscriptions, activeMaxSubscriptions] = await Promise.all([
                 Transaction.aggregate([
                     { $match: { status: 'success' } },
                     {
@@ -100,13 +100,15 @@ export class AdminAnalyticsController {
                     },
                     { $sort: { _id: 1 } }
                 ]),
-                User.countDocuments({ userType: 'user', subscriptionStatus: 'active', subscriptionType: 'pro' })
+                User.countDocuments({ userType: 'user', subscriptionStatus: 'active', subscriptionType: 'pro' }),
+                User.countDocuments({ userType: 'user', subscriptionStatus: 'active', subscriptionType: 'max' })
             ]);
             // Calculate MRR (Rough estimate based on active pro users * average pro price)
             // In a real app, this would be more precise from the Transaction model
             const totalRevenue = revenueStats[0]?.totalRevenue || 0;
             const totalUsers = await User.countDocuments({ userType: 'user' });
-            const mrr = activeSubscriptions * 29; // Assuming $29/mo for Pro
+            const activeSubscriptions = activeProSubscriptions + activeMaxSubscriptions;
+            const mrr = (activeProSubscriptions * 1200) + (activeMaxSubscriptions * 2400);
             const arr = mrr * 12;
             const arpu = totalUsers > 0 ? (totalRevenue / totalUsers).toFixed(2) : 0;
             res.json({

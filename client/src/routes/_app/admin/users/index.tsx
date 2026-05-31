@@ -121,6 +121,7 @@ function AdminUsersPage() {
             <SelectItem value="all">All Plans</SelectItem>
             <SelectItem value="free">Free</SelectItem>
             <SelectItem value="pro">Pro</SelectItem>
+            <SelectItem value="max">Max</SelectItem>
           </SelectContent>
         </Select>
         <Select value={status} onValueChange={setStatus}>
@@ -240,11 +241,17 @@ function AdminUsersPage() {
                   <TableCell>
                     <Badge
                       variant={
-                        user.subscriptionType === 'pro'
+                        user.subscriptionType === 'max'
                           ? 'default'
-                          : 'secondary'
+                          : user.subscriptionType === 'pro'
+                            ? 'default'
+                            : 'secondary'
                       }
-                      className="capitalize font-sans"
+                      className={`capitalize font-sans ${
+                        user.subscriptionType === 'max'
+                          ? 'bg-amber-500 hover:bg-amber-600 text-white'
+                          : ''
+                      }`}
                     >
                       {user.subscriptionType}
                     </Badge>

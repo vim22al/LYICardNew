@@ -589,9 +589,11 @@ function AdminDashboardPage() {
                         <Badge
                           variant="secondary"
                           className={`capitalize font-bold ${
-                            user.subscriptionType === 'pro'
-                              ? 'text-primary bg-primary/10'
-                              : ''
+                            user.subscriptionType === 'max'
+                              ? 'text-amber-500 bg-amber-500/10'
+                              : user.subscriptionType === 'pro'
+                                ? 'text-primary bg-primary/10'
+                                : ''
                           }`}
                         >
                           {user.subscriptionType} ({user.plan || 'N/A'})

@@ -23,7 +23,7 @@ const UserSchema = new Schema({
     },
     subscriptionType: {
         type: String,
-        enum: ['free', 'pro'],
+        enum: ['free', 'pro', 'max'],
         default: 'free'
     },
     subscriptionStartDate: { type: Date },
