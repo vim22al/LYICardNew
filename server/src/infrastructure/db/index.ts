@@ -9,10 +9,21 @@ export const connectDB = async () => {
     // mongodb://user:password@host:port/database?authSource=admin
     let connectionString = MONGO_URI;
     
-    // Simple check to append credentials if they are present and not in URI
-    if (!MONGO_URI.includes('@') && MONGO_USER && MONGO_PASSWORD) {
-        const urlObj = new URL(MONGO_URI);
+    try {
+      const urlObj = new URL(MONGO_URI);
+      
+      // If credentials are NOT in URI, append them
+      if (!MONGO_URI.includes('@') && MONGO_USER && MONGO_PASSWORD) {
         connectionString = `${urlObj.protocol}//${MONGO_USER}:${MONGO_PASSWORD}@${urlObj.host}/${MONGO_DATABASE}?authSource=admin`;
+      } else {
+        // If URI is fully qualified but lacks target database path, append MONGO_DATABASE
+        if ((urlObj.pathname === '/' || urlObj.pathname === '' || urlObj.pathname === '/default') && MONGO_DATABASE) {
+          urlObj.pathname = `/${MONGO_DATABASE}`;
+          connectionString = urlObj.toString();
+        }
+      }
+    } catch (e) {
+      console.warn('Could not parse MONGO_URI as a URL, using raw string:', e);
     }
 
     await mongoose.connect(connectionString);
