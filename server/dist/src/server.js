@@ -49,6 +49,80 @@ const startServer = async () => {
     app.get('/api/health', (req, res) => {
         res.json({ status: 'ok' });
     });
+    // DB Debug Endpoint
+    app.get('/api/debug/db', async (req, res) => {
+        try {
+            const mongoose = await import('mongoose');
+            const dbState = mongoose.default.connection.readyState;
+            const dbStates = {
+                0: 'disconnected',
+                1: 'connected',
+                2: 'connecting',
+                3: 'disconnecting'
+            };
+            // Test write
+            let writeResult = null;
+            let writeError = null;
+            try {
+                const testSchema = new mongoose.default.Schema({
+                    test: Boolean,
+                    createdAt: Date
+                }, { collection: 'debug_tests' });
+                const TestModel = mongoose.default.models.DebugTest || mongoose.default.model('DebugTest', testSchema);
+                writeResult = await TestModel.create({
+                    test: true,
+                    createdAt: new Date()
+                });
+            }
+            catch (err) {
+                writeError = {
+                    message: err.message,
+                    stack: err.stack
+                };
+            }
+            // Check user collection
+            let collections = [];
+            try {
+                if (mongoose.default.connection.db) {
+                    const list = await mongoose.default.connection.db.listCollections().toArray();
+                    collections = list.map(c => c.name);
+                }
+            }
+            catch (e) {
+                collections = ['error: ' + e.message];
+            }
+            res.json({
+                env: {
+                    MONGO_URI: env.MONGO_URI ? 'configured' : 'missing',
+                    MONGO_URI_VALUE: env.MONGO_URI,
+                    MONGODB_URI: process.env.MONGODB_URI || 'not set',
+                    DATABASE_URL: process.env.DATABASE_URL || 'not set',
+                    MONGO_USER: env.MONGO_USER,
+                    MONGO_DATABASE: env.MONGO_DATABASE,
+                    NODE_ENV: process.env.NODE_ENV,
+                },
+                connection: {
+                    readyState: dbState,
+                    status: dbStates[dbState] || 'unknown',
+                    dbName: mongoose.default.connection.name,
+                    host: mongoose.default.connection.host,
+                    port: mongoose.default.connection.port,
+                },
+                writeTest: {
+                    success: !writeError,
+                    result: writeResult,
+                    error: writeError
+                },
+                collections
+            });
+        }
+        catch (err) {
+            res.status(500).json({
+                error: err.message,
+                stack: err.stack
+            });
+        }
+    });
     try {
         // Sequential connections
         await connectDB();
@@ -75,6 +149,14 @@ const startServer = async () => {
         startEmailWorker();
         // Setup Bull Board
         setupBullBoard(app);
+        // Error handling middleware to guarantee JSON responses
+        app.use((err, req, res, next) => {
+            console.error('Unhandled error middleware:', err);
+            res.status(err.status || 500).json({
+                error: err.message || 'Internal Server Error',
+                stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+            });
+        });
         const port = env.PORT;
         app.listen(port, () => {
             console.log(`🚀 Server running on port ${port}`);

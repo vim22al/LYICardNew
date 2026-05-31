@@ -11,22 +11,63 @@ import { singleEmailQueue } from '../../infrastructure/queue/bullmq.js';
 const client = new OAuth2Client(process.env.GOOGLE_OAUTH_CLIENT_ID);
 
 export const register = async (req: Request, res: Response, next: NextFunction) => {
+  console.log('Register request body:', req.body);
   try {
     const { email, password, name } = req.body;
 
-    const existingUser = await User.findOne({ email });
+    const validationErrors = [];
+    if (!email) validationErrors.push('Email is required');
+    if (!password) validationErrors.push('Password is required');
+    if (!name) validationErrors.push('Name is required');
+
+    if (validationErrors.length > 0) {
+      res.status(400).json({
+        error: 'Validation failed',
+        validationErrors,
+        requestBody: req.body
+      });
+      return;
+    }
+
+    let existingUser;
+    try {
+      existingUser = await User.findOne({ email });
+    } catch (dbErr: any) {
+      console.error('Database find user error:', dbErr);
+      res.status(500).json({
+        error: 'Database query failed',
+        exception: dbErr.message,
+        stack: dbErr.stack,
+        requestBody: req.body
+      });
+      return;
+    }
+
     if (existingUser) {
-      res.status(400).json({ error: 'User already exists' });
+      res.status(400).json({ error: 'User already exists', requestBody: req.body });
       return;
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await User.create({
-      email,
-      password: hashedPassword,
-      name,
-      authType: 'email',
-    });
+    
+    let user;
+    try {
+      user = await User.create({
+        email,
+        password: hashedPassword,
+        name,
+        authType: 'email',
+      });
+    } catch (insertErr: any) {
+      console.error('Database insert user error:', insertErr);
+      res.status(500).json({
+        error: 'Database insertion failed',
+        exception: insertErr.message,
+        stack: insertErr.stack,
+        requestBody: req.body
+      });
+      return;
+    }
 
     const token = generateToken(user._id.toString());
 
@@ -40,9 +81,17 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
         authType: user.authType,
         jobTitle: user.jobTitle,
       },
+      requestBody: req.body,
+      insertResult: 'success'
     });
-  } catch (error) {
-    next(error);
+  } catch (error: any) {
+    console.error('Unhandled register error:', error);
+    res.status(500).json({
+      error: 'Unhandled register error',
+      exception: error.message,
+      stack: error.stack,
+      requestBody: req.body
+    });
   }
 };
 
