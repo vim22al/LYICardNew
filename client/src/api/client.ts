@@ -1,21 +1,24 @@
 // export const BASE_URL = 'http://localhost:8000/api'
 
 const getSanitizedBaseUrl = (): string => {
-  let rawUrl = import.meta.env.VITE_API_URL || '/api'
-  if (rawUrl.startsWith('http')) {
-    if (!rawUrl.endsWith('/api') && !rawUrl.endsWith('/api/')) {
-      if (rawUrl.endsWith('/')) {
-        rawUrl += 'api'
-      } else {
-        rawUrl += '/api'
-      }
-    }
-  } else {
-    // For relative paths, force it to be /api
-    if (rawUrl !== '/api') {
-      rawUrl = '/api'
+  let rawUrl = import.meta.env.VITE_API_URL
+  const isProd = import.meta.env.PROD || (typeof process !== 'undefined' && process.env?.NODE_ENV === 'production')
+
+  if (!rawUrl || !rawUrl.startsWith('http')) {
+    // If VITE_API_URL is missing, relative, or not absolute, default to absolute URL based on environment
+    rawUrl = isProd
+      ? 'http://tun11p4kzvckrqoxake01e35.31.97.235.52.sslip.io/api'
+      : 'http://localhost:8000/api'
+  }
+
+  if (!rawUrl.endsWith('/api') && !rawUrl.endsWith('/api/')) {
+    if (rawUrl.endsWith('/')) {
+      rawUrl += 'api'
+    } else {
+      rawUrl += '/api'
     }
   }
+
   // Ensure no trailing slash for clean endpoint concatenation
   if (rawUrl.endsWith('/')) {
     rawUrl = rawUrl.slice(0, -1)
