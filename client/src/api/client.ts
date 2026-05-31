@@ -2,9 +2,16 @@
 
 const getSanitizedBaseUrl = (): string => {
   let rawUrl = import.meta.env.VITE_API_URL
-  const isProd = import.meta.env.PROD || (typeof process !== 'undefined' && process.env?.NODE_ENV === 'production')
+  const isProdHost = typeof window !== 'undefined' && (
+    window.location.hostname.endsWith('lyicard.avptechsolution.com') ||
+    window.location.hostname.includes('avptechsolution.com')
+  )
+  const isProd = isProdHost || import.meta.env.PROD || (typeof process !== 'undefined' && process.env?.NODE_ENV === 'production')
 
-  if (!rawUrl || !rawUrl.startsWith('http')) {
+  if (isProdHost) {
+    // Force production backend API when running on the production domain
+    rawUrl = 'http://tun11p4kzvckrqoxake01e35.31.97.235.52.sslip.io/api'
+  } else if (!rawUrl || !rawUrl.startsWith('http')) {
     // If VITE_API_URL is missing, relative, or not absolute, default to absolute URL based on environment
     rawUrl = isProd
       ? 'http://tun11p4kzvckrqoxake01e35.31.97.235.52.sslip.io/api'
